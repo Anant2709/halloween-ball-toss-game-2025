@@ -1,15 +1,16 @@
 # 🎃 Halloween Ball Toss Game
 
-A Halloween-themed interactive game using an ESP32 microcontroller with 4 vibration sensors. Players throw a ball at a cardboard target, trying to hit the randomly selected "good" square!
+A Halloween-themed interactive game using an ESP32 microcontroller with 4 vibration sensors. Players throw a ball at a cardboard target to earn points! Each target square is worth 25, 50, 75, or 100 points, randomly assigned after each throw.
 
 ## 🎮 How It Works
 
 1. **Hardware**: 4 vibration sensors are placed behind a cardboard target
-2. **Game Logic**: One sensor is randomly designated as "good", the other three are "bad"
+2. **Game Logic**: Each sensor is worth points: 25, 50, 75, or 100 points (randomly assigned)
 3. **Gameplay**: Players throw a ball at the target
-   - Hit the good sensor → Success sound plays! 🎉
-   - Hit a bad sensor → Failure sound plays! 💥
-4. **Randomization**: After each hit, the game locks for 5 seconds, then randomly selects a new "good" sensor
+   - Hit any sensor → Earn points and hear a sound! 🎉
+   - Higher points = Better sound effects
+   - Score is tracked automatically
+4. **Randomization**: After each hit, the game locks for 5 seconds, then randomly reassigns the point values to different sensors
 
 ## 📋 Hardware Requirements
 
@@ -72,22 +73,26 @@ All sensors should have VCC connected to 3.3V and GND to GND.
 
 ### Step 3: Add Sound Files (Optional)
 
-The game works with built-in beep sounds, but you can add custom sound files:
+The game works with built-in beep sounds that vary by point value, but you can add custom sound files:
 
-1. Download or create two sound files:
-   - `good_sound.wav` - Plays when hitting the good sensor
-   - `bad_sound.wav` - Plays when hitting a bad sensor
+1. Download or create sound files for each point value:
+   - `sound_25.wav` - Plays when earning 25 points
+   - `sound_50.wav` - Plays when earning 50 points
+   - `sound_75.wav` - Plays when earning 75 points
+   - `sound_100.wav` - Plays when earning 100 points
 
 2. Place them in the same folder as `laptop_sound_player.py`
 
 **Free Sound Resources:**
-- [Freesound.org](https://freesound.org/) - Search for "success" and "failure" sounds
+- [Freesound.org](https://freesound.org/) - Search for "success", "points", "score" sounds
 - [Pixabay Sounds](https://pixabay.com/sound-effects/) - Free sound effects
 - [Zapsplat](https://www.zapsplat.com/) - Free with attribution
 
 Look for:
-- **Good sound**: Bell, chime, success jingle, "ding", applause
-- **Bad sound**: Buzzer, "wrong answer" sound, horn, boo
+- **25 points**: Simple beep, coin sound
+- **50 points**: Pleasant chime, "good job"
+- **75 points**: Success jingle, applause
+- **100 points**: Jackpot, fanfare, "amazing!"
 
 ## ▶️ Running the Game
 
@@ -114,26 +119,40 @@ Look for:
 
 **In the Python terminal:**
 ```
-=================================
-Halloween Ball Toss Game Started!
-=================================
-Good sensor is now: 3
----------------------------
-Waiting for ball throws...
+==================================================
+Halloween Ball Toss Game - Sound Player
+==================================================
+Points System: 25, 50, 75, or 100 points per throw
+==================================================
 
->>> HIT DETECTED on Sensor 3
-✓ CORRECT! Sending GOOD signal...
-🎯 >>> GOOD HIT! Playing success sound...
---- Game locked for 5 seconds ---
+Point assignments:
+  Sensor 1: 75 points
+  Sensor 2: 25 points
+  Sensor 3: 100 points
+  Sensor 4: 50 points
+---------------------------
+
+>>> HIT DETECTED on Sensor 3 - Worth 100 points!
+🎯 >>> SCORED 100 POINTS!
+🎉 100 POINTS! JACKPOT!
+📊 Score: 100 points | Throws: 1 | Avg: 100.0
 
 --- READY FOR NEXT THROW ---
-Good sensor is now: 1
----------------------------
 ```
 
 ### Stopping the Game:
 
 - Press `Ctrl+C` in the Python terminal to stop the sound player
+- You'll see your final score summary:
+  ```
+  ==================================================
+  GAME OVER!
+  ==================================================
+  Final Score: 325 points
+  Total Throws: 5
+  Average Points per Throw: 65.0
+  ==================================================
+  ```
 - The ESP32 will continue running (you can unplug it or press the reset button)
 
 ## 🔧 Troubleshooting
@@ -201,8 +220,10 @@ const unsigned long LOCK_DURATION_MS = 5000;  // Time between rounds (millisecon
 
 ```python
 BAUD_RATE = 115200  // Must match Arduino code
-GOOD_SOUND = "good_sound.wav"  // Path to success sound
-BAD_SOUND = "bad_sound.wav"    // Path to failure sound
+SOUND_25 = "sound_25.wav"   // 25 points sound
+SOUND_50 = "sound_50.wav"   // 50 points sound
+SOUND_75 = "sound_75.wav"   // 75 points sound
+SOUND_100 = "sound_100.wav" // 100 points sound
 ```
 
 ## 📁 Project Structure
@@ -210,11 +231,15 @@ BAD_SOUND = "bad_sound.wav"    // Path to failure sound
 ```
 Bhav_halloween_game/
 ├── halloween_game.ino          # ESP32 Arduino code
-├── laptop_sound_player.py      # Python sound player
+├── laptop_sound_player.py      # Python sound player with score tracking
 ├── requirements.txt            # Python dependencies
-├── README.md                   # This file
-├── good_sound.wav             # (Optional) Success sound
-└── bad_sound.wav              # (Optional) Failure sound
+├── README.md                   # Full documentation
+├── QUICK_START.md             # Quick start guide
+├── SOUND_RESOURCES.md         # Sound file resources
+├── sound_25.wav               # (Optional) 25 points sound
+├── sound_50.wav               # (Optional) 50 points sound
+├── sound_75.wav               # (Optional) 75 points sound
+└── sound_100.wav              # (Optional) 100 points sound
 ```
 
 ## 🎯 Game Tips
@@ -230,8 +255,10 @@ Bhav_halloween_game/
 - The ESP32 uses GPIO 36, 39, 34, 35 (input-only pins, perfect for sensors)
 - Serial communication runs at 115200 baud for fast response
 - The Python script includes auto-detection of the ESP32 port
-- Built-in beep sounds work if you don't have custom sound files
-- Game automatically randomizes after each round
+- Built-in beep sounds work if you don't have custom sound files (different sounds for each point value!)
+- Game automatically randomizes point assignments after each round
+- Score tracking shows total points, number of throws, and average per throw
+- Press Ctrl+C to see final score summary
 
 ## 🤝 Debugging Mode
 

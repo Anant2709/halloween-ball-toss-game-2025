@@ -30,7 +30,13 @@ Throw balls at your cardboard target. The script will auto-play sounds!
 
 ## 🎵 About Sounds
 
-The game **works immediately** with built-in beep sounds. No sound files needed!
+The game **works immediately** with built-in beep sounds that vary by point value:
+- **100 points**: Jackpot fanfare (4 ascending beeps)
+- **75 points**: Great job (3 ascending beeps)
+- **50 points**: Good throw (2 beeps)
+- **25 points**: Nice (single beep)
+
+No sound files needed!
 
 **Want custom sounds?** See `SOUND_RESOURCES.md` for free sound links.
 
@@ -80,12 +86,13 @@ All sensors: VCC → 3.3V, GND → GND
 
 ## 🎮 How the Game Works
 
-1. ESP32 randomly picks one sensor as "good"
+1. ESP32 randomly assigns point values (25, 50, 75, 100) to each sensor
 2. Player throws ball at cardboard target
-3. Good hit → Success sound! 🎉
-4. Bad hit → Failure sound! 💥
-5. Wait 5 seconds, then randomize again
-6. Repeat forever!
+3. Hit any sensor → Earn points + hear sound! 🎉
+4. Higher points = Better sound effects
+5. Score is tracked automatically
+6. Wait 5 seconds, then randomize point assignments
+7. Repeat forever! Try to maximize your score!
 
 ---
 

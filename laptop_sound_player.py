@@ -3,7 +3,7 @@
 Halloween Ball Toss Game - Laptop Sound Player
 
 This script listens to the ESP32 via serial port and plays sounds
-based on whether the player hit the good or bad sensor.
+based on the point value earned (25, 50, 75, or 100 points).
 
 Requirements:
 - pyserial (for serial communication)
@@ -19,8 +19,16 @@ import os
 
 # Configuration
 BAUD_RATE = 115200
-GOOD_SOUND = "good_sound.wav"  # Place your good sound file here
-BAD_SOUND = "bad_sound.wav"    # Place your bad sound file here
+
+# Optional custom sound files (place in same folder as script)
+SOUND_25 = "sound_25.wav"   # 25 points sound
+SOUND_50 = "sound_50.wav"   # 50 points sound
+SOUND_75 = "sound_75.wav"   # 75 points sound
+SOUND_100 = "sound_100.wav" # 100 points sound
+
+# Score tracking
+total_score = 0
+throw_count = 0
 
 def find_esp32_port():
     """
@@ -87,50 +95,77 @@ def play_beep(frequency, duration_ms):
     sound.play()
     pygame.time.wait(duration_ms)
 
-def play_good_sound():
-    """Play the good/success sound."""
-    if os.path.exists(GOOD_SOUND):
+def play_points_sound(points):
+    """Play sound based on points earned."""
+    global total_score, throw_count
+    
+    # Update score tracking
+    total_score += points
+    throw_count += 1
+    
+    # Determine which sound file to use
+    sound_file = None
+    if points == 100:
+        sound_file = SOUND_100
+    elif points == 75:
+        sound_file = SOUND_75
+    elif points == 50:
+        sound_file = SOUND_50
+    elif points == 25:
+        sound_file = SOUND_25
+    
+    # Try to play custom sound file if it exists
+    if sound_file and os.path.exists(sound_file):
         try:
-            sound = pygame.mixer.Sound(GOOD_SOUND)
+            sound = pygame.mixer.Sound(sound_file)
             sound.play()
             pygame.time.wait(int(sound.get_length() * 1000))
+            return
         except Exception as e:
-            print(f"Error playing good sound: {e}")
-            play_beep(800, 200)  # High pitch success beep
-    else:
-        # Play success beep pattern: high-high-higher
-        print("🎉 GOOD! (Playing beep - add 'good_sound.wav' for custom sound)")
+            print(f"Error playing sound file: {e}")
+    
+    # Otherwise, play beeps based on point value
+    if points == 100:
+        # Jackpot! - Ascending fanfare
+        print("🎉 100 POINTS! JACKPOT!")
+        play_beep(600, 100)
+        time.sleep(0.05)
+        play_beep(700, 100)
+        time.sleep(0.05)
+        play_beep(800, 100)
+        time.sleep(0.05)
+        play_beep(1000, 400)
+    elif points == 75:
+        # Great! - Triple ascending beeps
+        print("🌟 75 POINTS! Great throw!")
         play_beep(600, 150)
         time.sleep(0.05)
-        play_beep(700, 150)
+        play_beep(750, 150)
         time.sleep(0.05)
         play_beep(900, 300)
-
-def play_bad_sound():
-    """Play the bad/failure sound."""
-    if os.path.exists(BAD_SOUND):
-        try:
-            sound = pygame.mixer.Sound(BAD_SOUND)
-            sound.play()
-            pygame.time.wait(int(sound.get_length() * 1000))
-        except Exception as e:
-            print(f"Error playing bad sound: {e}")
-            play_beep(200, 500)  # Low pitch failure beep
-    else:
-        # Play failure beep pattern: low-lower
-        print("❌ BAD! (Playing beep - add 'bad_sound.wav' for custom sound)")
-        play_beep(300, 300)
+    elif points == 50:
+        # Good - Double beeps
+        print("✨ 50 POINTS! Good job!")
+        play_beep(500, 150)
         time.sleep(0.05)
-        play_beep(200, 500)
+        play_beep(700, 250)
+    elif points == 25:
+        # Okay - Single beep
+        print("💫 25 POINTS! Nice!")
+        play_beep(500, 300)
 
 def main():
     """Main function to listen to serial port and play sounds."""
+    
+    global total_score, throw_count
     
     # Initialize pygame mixer for sound
     pygame.mixer.init(frequency=22050, size=-16, channels=2, buffer=512)
     
     print("=" * 50)
     print("Halloween Ball Toss Game - Sound Player")
+    print("=" * 50)
+    print("Points System: 25, 50, 75, or 100 points per throw")
     print("=" * 50)
     
     # Find the ESP32 port
@@ -168,22 +203,35 @@ def main():
             if ser.in_waiting > 0:
                 line = ser.readline().decode('utf-8', errors='ignore').strip()
                 
-                # Only print debug info (not GOOD/BAD as they're handled separately)
-                if line and line not in ["GOOD", "BAD"]:
-                    print(line)
+                # Check for points message (format: "POINTS:value")
+                if line.startswith("POINTS:"):
+                    try:
+                        points = int(line.split(":")[1])
+                        print(f"\n🎯 >>> SCORED {points} POINTS!")
+                        play_points_sound(points)
+                        
+                        # Display score summary
+                        avg_score = total_score / throw_count if throw_count > 0 else 0
+                        print(f"📊 Score: {total_score} points | Throws: {throw_count} | Avg: {avg_score:.1f}")
+                        print("")
+                    except (ValueError, IndexError) as e:
+                        print(f"Error parsing points: {e}")
                 
-                # Check for game signals
-                if line == "GOOD":
-                    print("\n🎯 >>> GOOD HIT! Playing success sound...")
-                    play_good_sound()
-                    print("")
-                elif line == "BAD":
-                    print("\n💥 >>> BAD HIT! Playing failure sound...")
-                    play_bad_sound()
-                    print("")
+                # Print all other debug messages
+                elif line and not line.startswith("POINTS:"):
+                    print(line)
     
     except KeyboardInterrupt:
-        print("\n\nShutting down...")
+        print("\n\n" + "=" * 50)
+        print("GAME OVER!")
+        print("=" * 50)
+        print(f"Final Score: {total_score} points")
+        print(f"Total Throws: {throw_count}")
+        if throw_count > 0:
+            avg = total_score / throw_count
+            print(f"Average Points per Throw: {avg:.1f}")
+        print("=" * 50)
+        print("\nShutting down...")
         ser.close()
         pygame.mixer.quit()
         sys.exit(0)
