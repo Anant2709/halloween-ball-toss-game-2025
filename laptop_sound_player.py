@@ -21,10 +21,10 @@ import os
 BAUD_RATE = 115200
 
 # Optional custom sound files (place in same folder as script)
-SOUND_25 = "sound_25.wav"   # 25 points sound
-SOUND_50 = "sound_50.wav"   # 50 points sound
-SOUND_75 = "sound_75.wav"   # 75 points sound
-SOUND_100 = "sound_100.wav" # 100 points sound
+SOUND_25 = "25.wav"   # 25 points sound
+SOUND_50 = "50.wav"   # 50 points sound
+SOUND_75 = "75.wav"   # 75 points sound
+SOUND_100 = "100.wav" # 100 points sound
 
 # Score tracking
 total_score = 0

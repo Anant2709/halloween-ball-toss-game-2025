@@ -1,8 +1,12 @@
-# Sound files (users should download their own)
-*.wav
+# Sound files (except the custom game sounds)
+# Allow specific point sound files
+!25.wav
+!50.wav
+!75.wav
+!100.wav
+# Block other sound files
 *.mp3
 *.ogg
-sound_*.wav
 
 # Python
 __pycache__/

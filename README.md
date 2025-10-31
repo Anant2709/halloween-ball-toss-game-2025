@@ -76,10 +76,10 @@ All sensors should have VCC connected to 3.3V and GND to GND.
 The game works with built-in beep sounds that vary by point value, but you can add custom sound files:
 
 1. Download or create sound files for each point value:
-   - `sound_25.wav` - Plays when earning 25 points
-   - `sound_50.wav` - Plays when earning 50 points
-   - `sound_75.wav` - Plays when earning 75 points
-   - `sound_100.wav` - Plays when earning 100 points
+   - `25.wav` - Plays when earning 25 points
+   - `50.wav` - Plays when earning 50 points
+   - `75.wav` - Plays when earning 75 points
+   - `100.wav` - Plays when earning 100 points
 
 2. Place them in the same folder as `laptop_sound_player.py`
 
@@ -220,10 +220,10 @@ const unsigned long LOCK_DURATION_MS = 5000;  // Time between rounds (millisecon
 
 ```python
 BAUD_RATE = 115200  // Must match Arduino code
-SOUND_25 = "sound_25.wav"   // 25 points sound
-SOUND_50 = "sound_50.wav"   // 50 points sound
-SOUND_75 = "sound_75.wav"   // 75 points sound
-SOUND_100 = "sound_100.wav" // 100 points sound
+SOUND_25 = "25.wav"   // 25 points sound
+SOUND_50 = "50.wav"   // 50 points sound
+SOUND_75 = "75.wav"   // 75 points sound
+SOUND_100 = "100.wav" // 100 points sound
 ```
 
 ## 📁 Project Structure
@@ -236,10 +236,10 @@ Bhav_halloween_game/
 ├── README.md                   # Full documentation
 ├── QUICK_START.md             # Quick start guide
 ├── SOUND_RESOURCES.md         # Sound file resources
-├── sound_25.wav               # (Optional) 25 points sound
-├── sound_50.wav               # (Optional) 50 points sound
-├── sound_75.wav               # (Optional) 75 points sound
-└── sound_100.wav              # (Optional) 100 points sound
+├── 25.wav                     # 25 points sound
+├── 50.wav                     # 50 points sound
+├── 75.wav                     # 75 points sound
+└── 100.wav                    # 100 points sound
 ```
 
 ## 🎯 Game Tips
